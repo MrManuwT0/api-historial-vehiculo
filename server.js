@@ -3,22 +3,21 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
+// 1. Habilitar CORS para que GitHub Pages pueda leer los datos
 app.use(cors());
 app.use(express.json());
 
 const API_KEY = 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae';
 const API_HOST = 'api-matriculas-espana.p.rapidapi.com';
 
-// RUTA DE PRUEBA (Para ver si el server funciona)
+// 2. Ruta para la raíz (Soluciona el error "Cannot GET /")
 app.get('/', (req, res) => {
-    res.send('Servidor API Matrículas: ONLINE 🚀');
+    res.send('✅ Servidor de InfoMatricula funcionando correctamente');
 });
 
-// RUTA DE CONSULTA (La que llama tu script.js)
+// 3. Ruta de consulta para tu Web
 app.get('/consulta/:plate', async (req, res) => {
     const plate = req.params.plate;
-    console.log(`Buscando matrícula: ${plate}`);
-    
     try {
         const response = await axios.get(`https://${API_HOST}/get/${plate}`, {
             headers: {
@@ -28,12 +27,11 @@ app.get('/consulta/:plate', async (req, res) => {
         });
         res.json(response.data);
     } catch (error) {
-        console.error("Error en API:", error.message);
-        res.status(404).json({ error: 'No encontrado en la base de datos' });
+        res.status(404).json({ error: 'Vehículo no encontrado' });
     }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor listo en puerto ${PORT}`);
 });
