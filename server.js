@@ -6,15 +6,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// RUTA RAIZ
+// RUTA RAIZ (Para verificar que el server vive)
 app.get('/', (req, res) => {
-    res.send('✅ SERVIDOR ACTIVO - RUTA CONSULTA DISPONIBLE');
+    res.send('✅ SERVIDOR FUNCIONANDO - VERSION FINAL');
 });
 
-// RUTA DE CONSULTA (He añadido /api/ para asegurar que Render la registre bien)
-app.get('/api/consulta/:plate', async (req, res) => {
+// RUTA DE CONSULTA
+app.get('/consulta/:plate', async (req, res) => {
     const plate = req.params.plate;
-    console.log("Buscando matrícula:", plate);
+    console.log("Buscando matricula:", plate);
     
     try {
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
@@ -30,7 +30,12 @@ app.get('/api/consulta/:plate', async (req, res) => {
     }
 });
 
+// CAPTURADOR DE ERRORES 404 (Si alguna ruta falla, esto te avisará)
+app.use((req, res) => {
+    res.status(404).send(`La ruta ${req.url} no existe en este servidor.`);
+});
+
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor en puerto ${PORT}`);
+    console.log(`Servidor activo en puerto ${PORT}`);
 });
