@@ -5,11 +5,11 @@ const app = express();
 
 app.use(cors());
 
-// EL PUENTE: Captura la matrícula directamente en la raíz
+// El puente: Captura la matrícula directamente tras la barra
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
 
-    // Evitar errores con peticiones vacías o iconos
+    // Filtro para evitar peticiones basura del navegador
     if (!plate || plate === "FAVICON.ICO") return res.status(204).end();
 
     try {
@@ -19,10 +19,11 @@ app.get('/:plate', async (req, res) => {
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-        // Render simplemente deja pasar los datos de vuelta a tu web
+        
+        // Enviamos los datos puros (marca, modelo, bastidor, etc.) de vuelta
         res.json(response.data);
     } catch (error) {
-        res.status(error.response?.status || 500).json({ error: 'No encontrado en RapidAPI' });
+        res.status(error.response?.status || 500).json({ error: 'Matrícula no encontrada' });
     }
 });
 
