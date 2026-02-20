@@ -5,12 +5,16 @@ const app = express();
 
 app.use(cors());
 
-// RUTA PUENTE: Captura la matrícula directamente
+// EL PUENTE: Captura CUALQUIER cosa después de la "/" como matrícula
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
 
-    // Filtro para ignorar peticiones automáticas del sistema
-    if (plate === "FAVICON.ICO" || !plate) return res.status(204).end();
+    // Filtro de seguridad para peticiones vacías o iconos del sistema
+    if (!plate || plate === "FAVICON.ICO" || plate === "INDEX.HTML") {
+        return res.status(204).end();
+    }
+
+    console.log(`[PROXIED] Solicitando matrícula: ${plate}`);
 
     try {
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
@@ -19,16 +23,25 @@ app.get('/:plate', async (req, res) => {
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
+        
+        // Devolvemos los datos tal cual los entrega RapidAPI
         res.json(response.data);
+
     } catch (error) {
-        res.status(404).json({ error: 'Matrícula no encontrada en RapidAPI' });
+        // Si RapidAPI falla o la matrícula no existe
+        res.status(error.response?.status || 500).json({ 
+            error: 'No encontrado', 
+            message: error.message 
+        });
     }
 });
 
-// Mensaje de estado en la raíz
+// Mensaje de estado solo para la raíz pura "/"
 app.get('/', (req, res) => {
     res.send('✅ PUENTE RENDER ACTIVO');
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0');
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor puente en puerto ${PORT}`);
+});
