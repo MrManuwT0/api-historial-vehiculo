@@ -15,7 +15,7 @@ app.get('/:plate', async (req, res) => {
             // URL ACTUALIZADA SEGÚN TU NUEVA INFORMACIÓN
             url: `https://api-matriculas-espana.p.rapidapi.com/es?plate=${plate}`, 
             headers: {
-                'X-RapidAPI-Key': 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae',
+                'X-RapidAPI-Key': 'eed84183d8mshd47cb981fb16166p1750b2jsn1adb6a81a02a',
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         };
