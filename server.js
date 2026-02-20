@@ -4,13 +4,12 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
 
-// El puente: cualquier cosa que llegue después de la / se trata como matrícula
+// EL PUENTE: Captura la matrícula directamente en la raíz
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
 
-    // Evitar procesar peticiones vacías o de iconos del navegador
+    // Evitar errores con peticiones vacías o iconos
     if (!plate || plate === "FAVICON.ICO") return res.status(204).end();
 
     try {
@@ -20,16 +19,11 @@ app.get('/:plate', async (req, res) => {
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-        // Render simplemente pasa el paquete de datos de vuelta a GitHub
+        // Render simplemente deja pasar los datos de vuelta a tu web
         res.json(response.data);
     } catch (error) {
-        res.status(error.response?.status || 500).json({ error: 'No encontrado o error en puente' });
+        res.status(error.response?.status || 500).json({ error: 'No encontrado en RapidAPI' });
     }
-});
-
-// Ruta base para confirmar que el puente está levantado
-app.get('/', (req, res) => {
-    res.send('✅ PUENTE RENDER ACTIVO');
 });
 
 const PORT = process.env.PORT || 10000;
