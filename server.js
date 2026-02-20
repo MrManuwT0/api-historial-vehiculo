@@ -6,42 +6,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. ESCUCHA DIRECTA EN LA RAÍZ
-// Esto permite que llames a: https://api-historial-vehiculo.onrender.com/6986JDY
+// 1. RUTA DINÁMICA (Cualquier cosa tras la / es la matrícula)
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
 
-    // Ignorar peticiones automáticas del navegador
-    if (plate === "FAVICON.ICO" || plate === "") return res.status(204).end();
-
-    console.log(`Solicitando a RapidAPI la matrícula: ${plate}`);
+    // Evitar que el navegador pida el icono de la web
+    if (plate === "FAVICON.ICO") return res.status(204).end();
 
     try {
-        // 2. PETICIÓN A RAPIDAPI
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
             headers: {
                 'X-RapidAPI-Key': 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae',
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-
-        // 3. RESPUESTA AL FRONTEND
-        // Si RapidAPI devuelve datos, se los pasamos a tu web
         res.json(response.data);
-
     } catch (error) {
-        // Si RapidAPI devuelve 404 o error, lo reportamos
-        console.error("Error en el puente con RapidAPI:", error.message);
-        res.status(error.response?.status || 500).json({
-            error: 'Error al consultar RapidAPI',
-            details: error.message
-        });
+        res.status(404).json({ error: 'Matrícula no encontrada' });
     }
 });
 
-// Mensaje de bienvenida para verificar que el server está vivo
+// 2. RUTA RAIZ SIMPLE
 app.get('/', (req, res) => {
-    res.send('✅ Puente con RapidAPI configurado en la raíz. Listo para recibir matrículas.');
+    res.send('✅ SERVIDOR ONLINE');
+});
+
+// 3. CAPTURADOR DE RUTAS INEXISTENTES (Esto es lo que te está respondiendo ahora)
+app.use((req, res) => {
+    res.status(404).json({error: `La ruta ${req.url} no existe en este servidor.`});
 });
 
 const PORT = process.env.PORT || 10000;
