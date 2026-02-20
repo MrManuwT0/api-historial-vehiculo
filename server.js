@@ -3,10 +3,9 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
-app.use(cors()); // Permite que tu web de GitHub acceda a los datos
+app.use(cors());
 app.use(express.json());
 
-// Tus credenciales
 const API_KEY = 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae';
 const API_HOST = 'api-matriculas-espana.p.rapidapi.com';
 
@@ -21,10 +20,12 @@ app.get('/consulta/:plate', async (req, res) => {
         });
         res.json(response.data);
     } catch (error) {
-        console.error("Error en petición:", error.message);
-        res.status(error.response?.status || 500).json({ error: 'Matrícula no encontrada' });
+        res.status(500).json({ error: 'Error en la consulta' });
     }
 });
 
+// ESTO ES VITAL: Render usa process.env.PORT
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor activo en puerto ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor escuchando en puerto ${PORT}`);
+});
