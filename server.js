@@ -14,8 +14,8 @@ app.get('/:plate', async (req, res) => {
             url: `https://matriculas-espana1.p.rapidapi.com/es?plate=${plate}`,
             headers: {
                 // TU NUEVA CLAVE
-                'x-rapidapi-key': 'eed84183d8mshd47cb981fb16166p1750b2jsn1adb6a81a02a',
-                'x-rapidapi-host': 'matriculas-espana1.p.rapidapi.com'
+                'x-rapidapi-key': '4ddf96d71bmsh3494a1124c44afbp1b95f2jsn2f4faf4e8dba',
+                'x-rapidapi-host': 'api-matriculas-espana.p.rapidapi.com'
             }
         };
 
