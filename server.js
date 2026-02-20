@@ -12,7 +12,8 @@ app.get('/:plate', async (req, res) => {
     try {
         const config = {
             method: 'GET',
-            url: `https://api-matriculas-espana.p.rapidapi.com/${plate}`, // URL CORREGIDA SIN /GET/
+            // URL ACTUALIZADA SEGÚN TU NUEVA INFORMACIÓN
+            url: `https://api-matriculas-espana.p.rapidapi.com/es?plate=${plate}`, 
             headers: {
                 'X-RapidAPI-Key': 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae',
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
@@ -30,4 +31,4 @@ app.get('/:plate', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => console.log(`Puente Carbono Listo`));
+app.listen(PORT, '0.0.0.0');
