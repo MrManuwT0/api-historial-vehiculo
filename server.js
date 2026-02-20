@@ -5,11 +5,9 @@ const app = express();
 
 app.use(cors());
 
-// El "Túnel": Recibe la matrícula y la dispara a RapidAPI
 app.get('/:plate', async (req, res) => {
-    const { plate } = req.params;
-
-    if (!plate || plate.includes("favicon")) return res.status(204).end();
+    const plate = req.params.plate.toUpperCase();
+    console.log(`Buscando matrícula: ${plate}`); // Esto lo verás en el log de Render
 
     try {
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
@@ -18,12 +16,14 @@ app.get('/:plate', async (req, res) => {
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-        // Enviamos los datos puros al frontend
+        
+        // Enviamos la respuesta de RapidAPI tal cual
         res.json(response.data);
     } catch (error) {
-        res.status(error.response?.status || 500).json({ error: 'Error en la consulta' });
+        console.error("Error en RapidAPI:", error.message);
+        res.status(500).json({ error: "Error al consultar la API" });
     }
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0');
+app.listen(PORT, () => console.log(`Puente activo en puerto ${PORT}`));
