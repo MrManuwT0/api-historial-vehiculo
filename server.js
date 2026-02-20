@@ -5,12 +5,12 @@ const app = express();
 
 app.use(cors());
 
-// El puente: Captura la matrícula directamente tras la barra
+// RUTA PUENTE: Captura la matrícula directamente
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
 
-    // Filtro para evitar peticiones basura del navegador
-    if (!plate || plate === "FAVICON.ICO") return res.status(204).end();
+    // Filtro para ignorar peticiones automáticas del sistema
+    if (plate === "FAVICON.ICO" || !plate) return res.status(204).end();
 
     try {
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
@@ -19,12 +19,15 @@ app.get('/:plate', async (req, res) => {
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-        
-        // Enviamos los datos puros (marca, modelo, bastidor, etc.) de vuelta
         res.json(response.data);
     } catch (error) {
-        res.status(error.response?.status || 500).json({ error: 'Matrícula no encontrada' });
+        res.status(404).json({ error: 'Matrícula no encontrada en RapidAPI' });
     }
+});
+
+// Mensaje de estado en la raíz
+app.get('/', (req, res) => {
+    res.send('✅ PUENTE RENDER ACTIVO');
 });
 
 const PORT = process.env.PORT || 10000;
