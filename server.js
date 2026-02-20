@@ -6,35 +6,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. RUTA DE DIAGNÓSTICO (Para confirmar que el código es el nuevo)
+// RUTA RAIZ
 app.get('/', (req, res) => {
-    res.send('✅ SERVIDOR V3 - RUTAS ACTIVAS');
+    res.send('✅ SERVIDOR ACTIVO - RUTA CONSULTA DISPONIBLE');
 });
 
-// 2. RUTA DE CONSULTA REFORMATEADA
-app.get('/consulta/:plate', async (req, res) => {
-    const matricula = req.params.plate;
-    console.log(`Petición recibida para: ${matricula}`);
-
+// RUTA DE CONSULTA (He añadido /api/ para asegurar que Render la registre bien)
+app.get('/api/consulta/:plate', async (req, res) => {
+    const plate = req.params.plate;
+    console.log("Buscando matrícula:", plate);
+    
     try {
-        const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${matricula}`, {
+        const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
             headers: {
                 'X-RapidAPI-Key': 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae',
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
-        
-        // Devolvemos la data directamente
-        return res.status(200).json(response.data);
-
+        res.json(response.data);
     } catch (error) {
-        console.error("Error en API externa:", error.message);
-        return res.status(404).json({ error: 'No encontrado' });
+        console.error("Error en API:", error.message);
+        res.status(404).json({ error: 'No encontrado' });
     }
 });
 
-// 3. CONFIGURACIÓN DEL PUERTO
-const PORT = process.env.PORT || 10000; // Render prefiere el 10000 por defecto
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor escuchando en puerto ${PORT}`);
+    console.log(`Servidor en puerto ${PORT}`);
 });
