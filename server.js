@@ -6,24 +6,28 @@ const app = express();
 app.use(cors());
 
 app.get('/:plate', async (req, res) => {
-    const plate = req.params.plate.toUpperCase();
-    console.log(`Buscando matrícula: ${plate}`); // Esto lo verás en el log de Render
+    const plate = req.params.plate.toUpperCase().trim();
+    if (plate === "FAVICON.ICO") return res.status(204).end();
 
     try {
         const response = await axios.get(`https://api-matriculas-espana.p.rapidapi.com/get/${plate}`, {
             headers: {
+                // ASEGÚRATE DE QUE ESTA KEY ES LA CORRECTA EN TU PANEL DE RAPIDAPI
                 'X-RapidAPI-Key': 'b4b6eb078cmsh025d40281b264c2p19be9ajsn045ec5167bae',
                 'X-RapidAPI-Host': 'api-matriculas-espana.p.rapidapi.com'
             }
         });
         
-        // Enviamos la respuesta de RapidAPI tal cual
+        // Enviamos la respuesta directa
         res.json(response.data);
     } catch (error) {
-        console.error("Error en RapidAPI:", error.message);
-        res.status(500).json({ error: "Error al consultar la API" });
+        // Esto nos dirá si es culpa de la Key, del límite de créditos o de la matrícula
+        res.status(error.response?.status || 500).json({ 
+            error: "Error en RapidAPI", 
+            detalles: error.response?.data || error.message 
+        });
     }
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Puente activo en puerto ${PORT}`));
+app.listen(PORT, '0.0.0.0');
