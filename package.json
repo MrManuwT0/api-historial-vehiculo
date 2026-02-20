@@ -1,7 +1,7 @@
 {
-  "name": "api-historial",
+  "name": "api-historial-vehiculo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend para InfoMatricula",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
