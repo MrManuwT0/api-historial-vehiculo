@@ -3,22 +3,31 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
-app.use(cors()); // Permitir acceso desde cualquier web
+app.use(cors());
 
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
     try {
-        const response = await axios.get(`https://matriculas-espana1.p.rapidapi.com/es`, {
-            params: { plate: plate },
+        const config = {
+            method: 'GET',
+            // NUEVA URL DE LA API
+            url: `https://matriculas-espana1.p.rapidapi.com/es?plate=${plate}`,
             headers: {
-                'x-rapidapi-key': 'eed84183d8mshd47cb981fb16166p1750b2jsn1adb6a81a02a',
-                'x-rapidapi-host': 'matriculas-espana1.p.rapidapi.com'
+                // TU NUEVA CLAVE
+                'x-rapidapi-key': '4ddf96d71bmsh3494a1124c44afbp1b95f2jsn2f4faf4e8dba',
+                'x-rapidapi-host': 'api-matriculas-espana.p.rapidapi.com'
             }
-        });
+        };
+
+        const response = await axios.request(config);
         res.json(response.data);
     } catch (error) {
-        res.status(500).json({ error: "Error en API externa" });
+        res.status(500).json({ 
+            error: "Error en la nueva API", 
+            details: error.response ? error.response.data : error.message 
+        });
     }
 });
 
-app.listen(process.env.PORT || 10000);
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => console.log("Servidor vinculado a matriculas-espana1"));
