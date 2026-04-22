@@ -10,12 +10,11 @@ app.get('/:plate', async (req, res) => {
     try {
         const config = {
             method: 'GET',
-            // NUEVA URL DE LA API
-            url: `https://matriculas-espana1.p.rapidapi.com/es?plate=${plate}`,
+            url: `https://matriculas-espana1.p.rapidapi.com/es`,
+            params: { plate: plate }, // Se recomienda enviar el parámetro así
             headers: {
-                // TU NUEVA CLAVE
                 'x-rapidapi-key': '4ddf96d71bmsh3494a1124c44afbp1b95f2jsn2f4faf4e8dba',
-                'x-rapidapi-host': 'api-matriculas-espana.p.rapidapi.com'
+                'x-rapidapi-host': 'matriculas-espana1.p.rapidapi.com' // CORREGIDO AQUÍ
             }
         };
 
@@ -23,7 +22,7 @@ app.get('/:plate', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         res.status(500).json({ 
-            error: "Error en la nueva API", 
+            error: "Error en la API", 
             details: error.response ? error.response.data : error.message 
         });
     }
