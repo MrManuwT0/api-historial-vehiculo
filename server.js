@@ -7,24 +7,31 @@ app.use(cors());
 
 app.get('/:plate', async (req, res) => {
     const plate = req.params.plate.toUpperCase().trim();
-    if (!plate) return res.status(400).json({ error: "Matrícula requerida" });
+    
+    // Configuramos los headers exactos que pusiste en el curl
+    const options = {
+        method: 'GET',
+        url: 'https://matriculas-espana1.p.rapidapi.com/es',
+        params: { plate: plate },
+        headers: {
+            'x-rapidapi-key': '06cdd6d462msh0abc24c130d8be5p1e5d34jsna3e938c8cf62',
+            'x-rapidapi-host': 'matriculas-espana1.p.rapidapi.com',
+            'Content-Type': 'application/json'
+        }
+    };
 
     try {
-        const response = await axios.get(`https://matriculas-espana1.p.rapidapi.com/es`, {
-            params: { plate: plate },
-            headers: {
-                'x-rapidapi-key': '4ddf96d71bmsh3494a1124c44afbp1b95f2jsn2f4faf4e8dba',
-                'x-rapidapi-host': 'matriculas-espana1.p.rapidapi.com'
-            },
-            timeout: 5000 // 5 segundos de espera máxima
-        });
-        
+        const response = await axios.request(options);
         res.json(response.data);
     } catch (error) {
-        console.error("Error en servidor:", error.message);
-        res.status(502).json({ error: "No se pudo contactar con la API externa" });
+        // Esto mostrará en los logs de Render exactamente qué falla
+        console.error("ERROR DETALLADO:", error.response ? error.response.data : error.message);
+        res.status(502).json({ 
+            error: "Fallo de comunicación con la API", 
+            details: error.message 
+        });
     }
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => console.log("Servidor iniciado"));
+app.listen(PORT, () => console.log("Servidor escuchando en puerto " + PORT));
